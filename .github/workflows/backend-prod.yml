@@ -99,7 +99,7 @@ jobs:
           NETWORK_NAME="hack_network"
           echo "Running new container on port $NEXT_PORT..."
           sudo docker run -d \
-            --name haengdong-backend-$NEXT_PORT \
+            --name hack-backend-$NEXT_PORT \
             --network $NETWORK_NAME \
             -p $NEXT_PORT:8080 \
             -e SPRING_PROFILES_ACTIVE=prod \
@@ -136,7 +136,7 @@ jobs:
                 listen 80 reuseport;
 
                 location / {
-                    proxy_pass http://haengdong-backend-$NEXT_PORT:8080;
+                    proxy_pass http://hack-backend-$NEXT_PORT:8080;
                     proxy_set_header Host \$host;
                     proxy_set_header X-Real-IP \$remote_addr;
                     proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
@@ -164,7 +164,7 @@ jobs:
                 listen 80 reuseport;
 
                 location / {
-                    proxy_pass http://haengdong-backend-$NEXT_PORT:8080;
+                    proxy_pass http://hack-backend-$NEXT_PORT:8080;
                     proxy_set_header Host \$host;
                     proxy_set_header X-Real-IP \$remote_addr;
                     proxy_set_header X-Forwarded-For \$proxy_add_x_forwarded_for;
@@ -193,7 +193,7 @@ jobs:
             echo "Sleeping on port $CURRENT_PORT..."
             sleep 15
             echo "Removing on port $CURRENT_PORT..."
-            sudo docker ps -a --format "{{.Names}}" | grep "haengdong-backend-$CURRENT_PORT" | xargs sudo docker rm
+            sudo docker ps -a --format "{{.Names}}" | grep "hack-backend-$CURRENT_PORT" | xargs sudo docker rm
           else
             echo "No container to stop and remove."
           fi
