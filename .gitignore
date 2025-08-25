@@ -53,3 +53,6 @@ openapi3.yaml
 
 ### env ###
 .env
+
+### application ###
+src/main/resources/application-local.yml
