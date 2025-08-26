@@ -27,7 +27,7 @@ public class ChatConfig {
     @Bean
     ChatMemory chatMemory(ChatMemoryRepository chatMemoryRepository) { //사용자와의 대화를 저장하기 위한
         return MessageWindowChatMemory.builder()
-//                .chatMemoryRepository(chatMemoryRepository)
+                .chatMemoryRepository(chatMemoryRepository)
                 .maxMessages(50)
                 .build();
     }
