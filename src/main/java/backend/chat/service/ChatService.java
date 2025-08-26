@@ -5,6 +5,7 @@ import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.stereotype.Service;
 
+
 @Service
 @RequiredArgsConstructor
 public class ChatService implements ChatUseCase{
@@ -13,8 +14,12 @@ public class ChatService implements ChatUseCase{
     private final PromptBuilder promptBuilder;
 
     @Override
-    public String sendChat(String message, Guest guest) {
+    public String sendChat(String conversationId, String message, Guest guest) {
         Prompt prompt = promptBuilder.buildPrompt(message, guest);
-        return chatClient.prompt(prompt).call().content();
+        return chatClient
+                .prompt(prompt)
+                .advisors(a -> a.param("conversationId", conversationId))
+                .call()
+                .content();
     }
 }

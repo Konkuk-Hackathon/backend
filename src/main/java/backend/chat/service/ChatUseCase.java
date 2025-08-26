@@ -2,6 +2,6 @@ package backend.chat.service;
 
 public interface ChatUseCase {
 
-    String sendChat(String message, Guest guest);
+    String sendChat(String conversationId, String message, Guest guest);
 
 }
