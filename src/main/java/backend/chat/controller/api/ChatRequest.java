@@ -18,6 +18,6 @@ public class ChatRequest {
     @Size(max = 200, message = "메시지는 최대 200자까지 가능합니다.")
     private String message;
 
-    @Schema(description = "게스트 코드", example = "ybj")
+    @Schema(description = "게스트 코드", example = "ubyung")
     private String guestCode;
 }
