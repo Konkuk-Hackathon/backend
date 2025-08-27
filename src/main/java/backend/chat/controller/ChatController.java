@@ -1,11 +1,10 @@
 package backend.chat.controller;
 
-import backend.chat.controller.api.ChatRequest;
-import backend.chat.controller.api.ChatResponse;
-import backend.chat.controller.api.GuestCodeResponse;
+import backend.chat.controller.api.*;
 import backend.chat.repository.MemberRepository;
-import backend.chat.service.ChatService;
+import backend.chat.service.ChatUseCase;
 import backend.chat.service.Guest;
+import backend.domain.Chat;
 import backend.domain.Member;
 import backend.domain.Thread;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,7 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
+import java.util.*;
 
 @Tag(name = "채팅 API", description = "채팅 관련 API")
 @RestController
@@ -28,7 +27,7 @@ import java.util.Arrays;
 @RequestMapping(value = "/api", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ChatController {
 
-    private final ChatService chatService;
+    private final ChatUseCase chatUseCase;
     private final MemberRepository memberRepository;
     private final Long defaultMemberId = 1L;
 
@@ -54,15 +53,45 @@ public class ChatController {
             @ApiResponse(responseCode = "200", description = "전송 성공",
                     content = @Content(schema = @Schema(implementation = ChatResponse.class)))
     })
-    @PostMapping("/chat")
+    @PostMapping("/chats")
     public ResponseEntity<ChatResponse> sendMessage(@RequestBody ChatRequest request) {
         Guest guest = Guest.fromCode(request.getGuestCode());
         LocalDateTime chatSentTime = LocalDateTime.now();
         Member member = memberRepository.findById(defaultMemberId).orElseThrow(); // service로 감아야하는데 나중에
-        Thread thread = chatService.findThread(member, request.getConversationId(), chatSentTime);
-        String chatResponse = chatService.sendChat(thread.getConversationId(), request.getMessage(), guest);
-        chatService.updateThread(member, thread, chatSentTime);
-        return ResponseEntity.ok().body(new ChatResponse(chatResponse, chatSentTime, thread.getConversationId()));
+        Thread thread = chatUseCase.findThread(member, chatSentTime);
+        String chatResponse = chatUseCase.sendChat(thread.getConversationId(), request.getMessage(), guest);
+        chatUseCase.updateThread(member, thread, chatSentTime);
+        return ResponseEntity.ok().body(new ChatResponse(chatResponse, chatSentTime));
+    }
+
+    @Operation(summary = "모든 채팅 대화 조회",
+            description = """
+        사용자의 모든 채팅 대화(스레드) 목록을 반환합니다.
+        정렬 규칙
+        - 스레드(Thread) 목록은 생성 시각(createdTime) 기준 오름차순으로 정렬되어 반환됩니다.
+          → 가장 먼저 생성된 대화 스레드가 맨 앞에 위치합니다.
+        - 각 스레드에 속한 채팅 메시지(Chat)는 전송 시각(timestamp) 기준 오름차순으로 정렬됩니다.
+          → 대화 시작 메시지가 배열의 첫 번째에 위치하며, 시간 흐름에 따라 순차적으로 정렬됩니다""")
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "조회 성공",
+                    content = @Content(schema = @Schema(implementation = ThreadsOfMember.class))
+            )
+    })
+    @GetMapping("/chats")
+    public ResponseEntity<ThreadsOfMember> getAllMessagesOfMember(){
+        Member member = memberRepository.findById(defaultMemberId).orElseThrow();
+        List<ChatsOfThread> chatsOfThreads = new ArrayList<>();
+        List<Thread> threadsOfMember = chatUseCase.findThreadsOfMember(member);
+        System.out.println(threadsOfMember.size());
+        for (Thread thread : threadsOfMember) {
+            List<ChatDto> list = chatUseCase.findChatsOfThread(thread).stream()
+                    .map(chat -> new ChatDto(chat.content(), chat.type(), chat.timestamp()))
+                    .toList();
+            chatsOfThreads.add(new ChatsOfThread(thread.getConversationId(), thread.getCreatedTime(), list));
+        }
+        return ResponseEntity.ok().body(new ThreadsOfMember(chatsOfThreads));
     }
 
 }
