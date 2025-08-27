@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -54,7 +55,7 @@ public class ChatController {
             @ApiResponse(responseCode = "200", description = "전송 성공",
                     content = @Content(schema = @Schema(implementation = ChatResponse.class)))
     })
-    @PostMapping("/chat")
+    @PostMapping("/chats")
     public ResponseEntity<ChatResponse> sendMessage(@RequestBody ChatRequest request) {
         Guest guest = Guest.fromCode(request.getGuestCode());
         LocalDateTime chatSentTime = LocalDateTime.now();
@@ -63,6 +64,11 @@ public class ChatController {
         String chatResponse = chatService.sendChat(thread.getConversationId(), request.getMessage(), guest);
         chatService.updateThread(member, thread, chatSentTime);
         return ResponseEntity.ok().body(new ChatResponse(chatResponse, chatSentTime));
+    }
+
+    @GetMapping("/chats")
+    public ResponseEntity<String> test(){
+        return ResponseEntity.ok("test");
     }
 
 }
