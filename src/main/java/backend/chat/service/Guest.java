@@ -7,7 +7,8 @@ import java.util.Arrays;
 @Getter
 public enum Guest {
 
-    YBJ("유병재","ybj","classpath:/prompts/ybj-template.st");
+    YBJ("유병재","ubyung","classpath:/prompts/ybj-template.st"),
+    KEY("키","key","classpath:/prompts/ybj-template.st");
 
     private final String guestName;
     private final String guestCode;

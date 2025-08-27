@@ -59,10 +59,10 @@ public class ChatController {
         Guest guest = Guest.fromCode(request.getGuestCode());
         LocalDateTime chatSentTime = LocalDateTime.now();
         Member member = memberRepository.findById(defaultMemberId).orElseThrow(); // service로 감아야하는데 나중에
-        Thread thread = chatService.findThread(member, request.getConversationId(), chatSentTime);
+        Thread thread = chatService.findThread(member, chatSentTime);
         String chatResponse = chatService.sendChat(thread.getConversationId(), request.getMessage(), guest);
         chatService.updateThread(member, thread, chatSentTime);
-        return ResponseEntity.ok().body(new ChatResponse(chatResponse, chatSentTime, thread.getConversationId()));
+        return ResponseEntity.ok().body(new ChatResponse(chatResponse, chatSentTime));
     }
 
 }

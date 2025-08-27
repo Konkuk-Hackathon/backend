@@ -25,8 +25,8 @@ public class ChatService implements ChatUseCase{
     private final MemberRepository memberRepository;
 
     @Override
-    public Thread findThread(Member member, String conversationId, LocalDateTime chatSentTime) {
-        return threadRepository.findActiveThread(member, conversationId)
+    public Thread findThread(Member member, LocalDateTime chatSentTime) {
+        return threadRepository.findActiveThread(member)
                 .orElseGet(()-> createThread(chatSentTime,member));
     }
 
@@ -44,8 +44,8 @@ public class ChatService implements ChatUseCase{
     @Override
     public void updateThread(Member member, Thread thread, LocalDateTime chatSentTime) {
         memberRepository.save(member);  // Thread 를 처음 생성하는 경우를 고려해서 member를 영속성 컨텍스트에 추가
-        thread.updateLastActivityTime(chatSentTime);
         threadRepository.save(thread);
+        thread.updateLastActivityTime(chatSentTime);
     }
 
     private Thread createThread(LocalDateTime createdTime, Member member){

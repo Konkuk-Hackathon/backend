@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 public interface ChatUseCase {
 
-    Thread findThread(Member member, String conversationId, LocalDateTime updateTime);
+    Thread findThread(Member member, LocalDateTime updateTime);
 
     String sendChat(String conversationId, String message, Guest guest);
 
