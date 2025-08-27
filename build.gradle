@@ -38,6 +38,12 @@ dependencies {
     implementation "org.springframework.ai:spring-ai-advisors-vector-store"
     implementation "org.springframework.ai:spring-ai-starter-model-chat-memory-repository-jdbc"
 
+    //test-container
+    testImplementation 'org.testcontainers:junit-jupiter:1.19.8'
+    testImplementation 'org.testcontainers:postgresql:1.19.8'
+    testImplementation 'org.testcontainers:jdbc:1.19.8'
+    testRuntimeOnly 'org.postgresql:postgresql:42.7.3'
+
 
 }
 
