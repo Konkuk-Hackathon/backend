@@ -45,10 +45,7 @@ public class ChatController {
     }
 
     @Operation(summary = "채팅 메시지 전송", description = """
-    채팅 메시지를 AI 게스트에게 전달하고 응답을 반환합니다.
-    케이스:
-    1. 새로운 대화 시작: conversationId를 빈 값으로 전달 -> 서버에서 새로운 conversationId를 생성하여 반환합니다.
-    2. 기존 대화 이어가기: 이전에 받은 conversationId를 그대로 요청에 포함시켜 대화를 이어갑니다.""")
+    채팅 메시지를 AI 게스트에게 전달하고 응답을 반환합니다.""")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "전송 성공",
                     content = @Content(schema = @Schema(implementation = ChatResponse.class)))
@@ -84,10 +81,9 @@ public class ChatController {
         Member member = memberRepository.findById(defaultMemberId).orElseThrow();
         List<ChatsOfThread> chatsOfThreads = new ArrayList<>();
         List<Thread> threadsOfMember = chatUseCase.findThreadsOfMember(member);
-        System.out.println(threadsOfMember.size());
         for (Thread thread : threadsOfMember) {
             List<ChatDto> list = chatUseCase.findChatsOfThread(thread).stream()
-                    .map(chat -> new ChatDto(chat.content(), chat.type(), chat.timestamp()))
+                    .map(chat -> new ChatDto(chat.content(), chat.type(), "ubyung",chat.timestamp()))
                     .toList();
             chatsOfThreads.add(new ChatsOfThread(thread.getConversationId(), thread.getCreatedTime(), list));
         }

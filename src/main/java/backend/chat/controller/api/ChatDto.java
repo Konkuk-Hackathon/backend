@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public record ChatDto (
         String content,
         String type,
+        String guestCode,
         LocalDateTime timeStamp
 
 ){}
