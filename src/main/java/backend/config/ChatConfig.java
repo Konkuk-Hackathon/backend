@@ -28,7 +28,7 @@ public class ChatConfig {
     ChatMemory chatMemory(ChatMemoryRepository chatMemoryRepository) { //사용자와의 대화를 저장하기 위한
         return MessageWindowChatMemory.builder()
                 .chatMemoryRepository(chatMemoryRepository)
-                .maxMessages(50)
+                .maxMessages(30)
                 .build();
     }
 

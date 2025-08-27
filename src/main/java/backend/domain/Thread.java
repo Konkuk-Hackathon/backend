@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
-@Builder(builderMethodName = "internalBuilder")
+@Builder
 public class Thread {
 
     @Id
@@ -39,6 +39,10 @@ public class Thread {
     private Member member;
 
     @Column(nullable = false)
-    private boolean isActive;
+    private Boolean isActive;
+
+    public void updateLastActivityTime(LocalDateTime updateTime) {
+        this.lastActivityTime = updateTime;
+    }
 
 }
