@@ -32,7 +32,6 @@ public class ChatService implements ChatUseCase{
 
     @Override
     public String sendChat(String conversationId, String message, Guest guest) {
-        System.out.println("conversationId = " + conversationId);
         Prompt prompt = promptBuilder.buildPrompt(message, guest);
         return chatClient
                 .prompt(prompt)
