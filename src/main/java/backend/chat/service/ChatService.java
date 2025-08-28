@@ -1,9 +1,6 @@
 package backend.chat.service;
 
-import backend.chat.repository.ChatGuestRepository;
-import backend.chat.repository.ChatRepository;
-import backend.chat.repository.MemberRepository;
-import backend.chat.repository.ThreadRepository;
+import backend.chat.repository.*;
 import backend.chat.service.dto.ChatsOfThreadDto;
 import backend.domain.Chat;
 import backend.domain.ChatGuest;
@@ -33,6 +30,7 @@ class ChatService implements ChatUseCase{
     private final MemberRepository memberRepository;
     private final ChatRepository chatRepository;
     private final ChatGuestRepository chatGuestRepository;
+    private final ChatVectorStore chatVectorStore;
 
     @Override
     public Thread findThread(Member member, LocalDateTime chatSentTime) {
@@ -96,5 +94,21 @@ class ChatService implements ChatUseCase{
                 .toList();
         chatGuestRepository.saveAll(chatGuests);
 
+    }
+
+    @Transactional
+    @Override
+    public void summary(Member member) {
+        Thread thread = threadRepository.findActiveThread(member).orElseThrow();
+        List<Chat> chats = chatRepository.findByConversationId(thread.getConversationId());
+        StringBuilder conversation = new StringBuilder();
+        for (Chat chat : chats) {
+            conversation.append("type = ").append(chat.type()).append('\n')
+                    .append("content = ").append(chat.content()).append('\n');
+        }
+        Prompt prompt = promptBuilder.buildSummaryTemplate(conversation.toString());
+        String summary = chatClient.prompt(prompt).call().content();
+        chatVectorStore.saveSummary(summary,member.getId(),thread.getLastActivityTime());
+        thread.inactive();
     }
 }

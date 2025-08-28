@@ -24,12 +24,18 @@ public class PromptBuilder {
 
     private final Map<Guest, Resource> templates = new EnumMap<>(Guest.class);
 
+    private PromptTemplate summaryTemplate;
+
+    @Value("classpath:/prompts/summary-template.st")
+    private Resource summaryPromptTemplate;
+
     @PostConstruct
     private void init() {
         for (Guest guest : Guest.values()) {
             Resource res = resourceLoader.getResource(guest.getTemplateLocation());
             templates.put(guest, res);
         }
+        summaryTemplate = new PromptTemplate(summaryPromptTemplate);
     }
 
     public Prompt buildPrompt(String userMessage, Guest guest) {
@@ -37,6 +43,12 @@ public class PromptBuilder {
                 new SystemMessage(templates.get(guest)),
                 new UserMessage(userMessage)
         ));
+    }
+
+    public Prompt buildSummaryTemplate(String conversation){
+        Map<String, Object> promptParameters = new HashMap<>();
+        promptParameters.put("conversation", conversation);
+        return summaryTemplate.create(promptParameters);
     }
 
 }

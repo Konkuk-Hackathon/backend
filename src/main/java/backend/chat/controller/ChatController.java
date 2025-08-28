@@ -120,4 +120,11 @@ public class ChatController {
         return result;
     }
 
+    @PostMapping("/summary")
+    public ResponseEntity<String> summaryUserConversation(){
+        Member member = memberRepository.findById(defaultMemberId).orElseThrow();
+        chatUseCase.summary(member);
+        return ResponseEntity.ok().body("good");
+    }
+
 }

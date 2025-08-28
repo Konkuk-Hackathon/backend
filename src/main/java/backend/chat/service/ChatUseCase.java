@@ -22,4 +22,6 @@ public interface ChatUseCase {
     ChatsOfThreadDto findChatsOfThread(Thread thread);
 
     void saveChatGuest(String conversationId, Guest guest);
+
+    void summary(Member member);
 }
