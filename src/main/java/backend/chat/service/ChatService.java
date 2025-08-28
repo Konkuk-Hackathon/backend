@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.ai.chat.client.ChatClient;
 import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.ai.document.Document;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import static org.springframework.ai.chat.memory.ChatMemory.CONVERSATION_ID;
@@ -40,8 +41,9 @@ class ChatService implements ChatUseCase{
 
     @Transactional
     @Override
-    public String sendChat(String conversationId, String message, Guest guest) {
-        Prompt prompt = promptBuilder.buildPrompt(message, guest);
+    public String sendChat(Long memberId, String conversationId, String message, Guest guest) {
+        List<String> documents = chatVectorStore.searchSummaries(memberId, message);
+        Prompt prompt = promptBuilder.buildPrompt(message, guest,documents);
         String content = chatClient
                 .prompt(prompt)
                 .advisors(a -> a.param(CONVERSATION_ID, conversationId))

@@ -19,13 +19,15 @@ public class ChatVectorStore {
 
     private final VectorStore vectorStore;
 
-    public List<Document> searchSummaries(Long memberId, String query) {
+    public List<String> searchSummaries(Long memberId, String query) {
         return vectorStore.similaritySearch(SearchRequest
                 .builder()
                 .query(query)
                 .topK(TOP_K)
                 .filterExpression("memberId == " + memberId)
-                .build());
+                .build()).stream()
+                .map(Document::getText)
+                .toList();
     }
 
     public void saveSummary(String summaryText,
