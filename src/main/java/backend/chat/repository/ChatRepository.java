@@ -27,4 +27,22 @@ public class ChatRepository {
                 rs.getTimestamp("timestamp").toLocalDateTime()
         ), conversationId);
     }
+
+    public List<Chat> findLatestTwoByConversationId(String conversationId) {
+        String sql = """
+        SELECT conversation_id, content, type, timestamp
+        FROM spring_ai_chat_memory
+        WHERE conversation_id = ?
+        ORDER BY timestamp DESC
+        LIMIT 2 """;
+
+        return jdbc.query(sql, (rs, i) -> new Chat(
+                rs.getString("conversation_id"),
+                rs.getString("content"),
+                rs.getString("type"),
+                rs.getTimestamp("timestamp").toLocalDateTime()
+        ), conversationId);
+    }
+
+
 }
