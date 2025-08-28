@@ -4,7 +4,9 @@ import backend.chat.controller.api.*;
 import backend.chat.repository.MemberRepository;
 import backend.chat.service.ChatUseCase;
 import backend.chat.service.Guest;
+import backend.chat.service.dto.ChatsOfThreadDto;
 import backend.domain.Chat;
+import backend.domain.ChatGuest;
 import backend.domain.Member;
 import backend.domain.Thread;
 import io.swagger.v3.oas.annotations.Operation;
@@ -58,6 +60,7 @@ public class ChatController {
         Thread thread = chatUseCase.findThread(member, chatSentTime);
         String chatResponse = chatUseCase.sendChat(thread.getConversationId(), request.getMessage(), guest);
         chatUseCase.updateThread(member, thread, chatSentTime);
+        chatUseCase.saveChatGuest(thread.getConversationId(), guest);
         return ResponseEntity.ok().body(new ChatResponse(chatResponse, chatSentTime));
     }
 
@@ -82,12 +85,40 @@ public class ChatController {
         List<ChatsOfThread> chatsOfThreads = new ArrayList<>();
         List<Thread> threadsOfMember = chatUseCase.findThreadsOfMember(member);
         for (Thread thread : threadsOfMember) {
-            List<ChatDto> list = chatUseCase.findChatsOfThread(thread).stream()
-                    .map(chat -> new ChatDto(chat.content(), chat.type(), "ubyung",chat.timestamp()))
-                    .toList();
+            ChatsOfThreadDto chatsOfThread = chatUseCase.findChatsOfThread(thread);
+            List<ChatDto> list = toChatDtos(chatsOfThread.chats(), chatsOfThread.chatGuests());
             chatsOfThreads.add(new ChatsOfThread(thread.getConversationId(), thread.getCreatedTime(), list));
         }
         return ResponseEntity.ok().body(new ThreadsOfMember(chatsOfThreads));
+    }
+
+    public List<ChatDto> toChatDtos(List<Chat> chats, List<ChatGuest> chatGuests) {
+        if (chats.size() != chatGuests.size()) {
+            System.out.println("chats.size() = " + chats.size());
+            System.out.println("chatGuests.size() = " + chatGuests.size());
+            throw new IllegalArgumentException("Chats and ChatGuests size must be the same");
+        }
+
+        List<ChatDto> result = new ArrayList<>();
+
+        for (int i = 0; i < chats.size(); i++) {
+            Chat chat = chats.get(i);
+            ChatGuest chatGuest = chatGuests.get(i);
+
+            // Guest → guestCode 추출
+            String guestCode = chatGuest.getGuest().getGuestCode();
+
+            ChatDto dto = new ChatDto(
+                    chat.content(),
+                    chat.type(),
+                    guestCode,
+                    chat.timestamp()
+            );
+
+            result.add(dto);
+        }
+
+        return result;
     }
 
 }

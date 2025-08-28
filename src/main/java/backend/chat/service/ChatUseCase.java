@@ -1,6 +1,7 @@
 package backend.chat.service;
 
 
+import backend.chat.service.dto.ChatsOfThreadDto;
 import backend.domain.Chat;
 import backend.domain.Member;
 import backend.domain.Thread;
@@ -18,7 +19,7 @@ public interface ChatUseCase {
 
     List<Thread> findThreadsOfMember(Member member);
 
-    List<Chat> findChatsOfThread(Thread thread);
+    ChatsOfThreadDto findChatsOfThread(Thread thread);
 
-
+    void saveChatGuest(String conversationId, Guest guest);
 }
