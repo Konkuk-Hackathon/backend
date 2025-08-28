@@ -44,7 +44,7 @@ public class PromptBuilder {
         StringBuilder summary = new StringBuilder();
         summary.append("이건 RAG로 사용자의 메시지와 비슷한 이전 대화기록이야 ").append('\n');
         documents.forEach(document -> summary.append(document).append('\n'));
-        promptMessages.add(new UserMessage(summary.toString()));
+        promptMessages.add(new SystemMessage(summary.toString()));
         return new Prompt(promptMessages);
     }
 
