@@ -46,4 +46,8 @@ public class Thread {
         this.lastActivityTime = updateTime;
     }
 
+    public void inactive() {
+        this.isActive = false;
+    }
+
 }

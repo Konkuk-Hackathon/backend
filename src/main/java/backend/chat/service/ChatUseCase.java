@@ -13,7 +13,7 @@ public interface ChatUseCase {
 
     Thread findThread(Member member, LocalDateTime updateTime);
 
-    String sendChat(String conversationId, String message, Guest guest);
+    String sendChat(Long memberId, String conversationId, String message, Guest guest);
 
     void updateThread(Member member, Thread thread, LocalDateTime chatSentTime);
 
@@ -22,4 +22,6 @@ public interface ChatUseCase {
     ChatsOfThreadDto findChatsOfThread(Thread thread);
 
     void saveChatGuest(String conversationId, Guest guest);
+
+    void summary(Member member);
 }

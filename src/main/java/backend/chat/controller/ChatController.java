@@ -58,7 +58,7 @@ public class ChatController {
         LocalDateTime chatSentTime = LocalDateTime.now();
         Member member = memberRepository.findById(defaultMemberId).orElseThrow(); // service로 감아야하는데 나중에
         Thread thread = chatUseCase.findThread(member, chatSentTime);
-        String chatResponse = chatUseCase.sendChat(thread.getConversationId(), request.getMessage(), guest);
+        String chatResponse = chatUseCase.sendChat(member.getId(), thread.getConversationId(), request.getMessage(), guest);
         chatUseCase.updateThread(member, thread, chatSentTime);
         return ResponseEntity.ok().body(new ChatResponse(chatResponse, chatSentTime));
     }
@@ -118,6 +118,13 @@ public class ChatController {
         }
 
         return result;
+    }
+
+    @PostMapping("/summary")
+    public ResponseEntity<String> summaryUserConversation(){
+        Member member = memberRepository.findById(defaultMemberId).orElseThrow();
+        chatUseCase.summary(member);
+        return ResponseEntity.ok().body("good");
     }
 
 }
