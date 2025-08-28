@@ -92,11 +92,11 @@ public class ChatController {
     }
 
     public List<ChatDto> toChatDtos(List<Chat> chats, List<ChatGuest> chatGuests) {
-        if (chats.size() != chatGuests.size()) {
-            System.out.println("chats.size() = " + chats.size());
-            System.out.println("chatGuests.size() = " + chatGuests.size());
-            throw new IllegalArgumentException("Chats and ChatGuests size must be the same");
-        }
+//        if (chats.size() != chatGuests.size()) {
+//            System.out.println("chats.size() = " + chats.size());
+//            System.out.println("chatGuests.size() = " + chatGuests.size());
+//            throw new IllegalArgumentException("Chats and ChatGuests size must be the same");
+//        }
 
         List<ChatDto> result = new ArrayList<>();
 
