@@ -40,14 +40,17 @@ class ChatService implements ChatUseCase{
                 .orElseGet(()-> createThread(chatSentTime,member));
     }
 
+    @Transactional
     @Override
     public String sendChat(String conversationId, String message, Guest guest) {
         Prompt prompt = promptBuilder.buildPrompt(message, guest);
-        return chatClient
+        String content = chatClient
                 .prompt(prompt)
                 .advisors(a -> a.param(CONVERSATION_ID, conversationId))
                 .call()
                 .content();
+        this.saveChatGuest(conversationId, guest);
+        return content;
     }
 
     @Transactional

@@ -60,7 +60,6 @@ public class ChatController {
         Thread thread = chatUseCase.findThread(member, chatSentTime);
         String chatResponse = chatUseCase.sendChat(thread.getConversationId(), request.getMessage(), guest);
         chatUseCase.updateThread(member, thread, chatSentTime);
-        chatUseCase.saveChatGuest(thread.getConversationId(), guest);
         return ResponseEntity.ok().body(new ChatResponse(chatResponse, chatSentTime));
     }
 
